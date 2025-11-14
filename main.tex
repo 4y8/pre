@@ -12,7 +12,10 @@
 \usepackage[backend=bibtex, style=alphabetic]{biblatex}
 \addbibresource{main.bib}
 
+\usepackage{amsmath}
+\usepackage{amsthm}
 \newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
 
 \renewcommand{\baselinestretch}{1.06}
 %\usepackage{MnSymbol}
@@ -58,24 +61,25 @@ In this section, $\mathcal{C}$ will denote a 2-category with cartesian products
 whose unit will be noted $1$.
 
 We adapt the definitions of \emph{concurrent monoid} from~\cite{rivas2019monads}
-to a 2-categorical context.
+to a 2-categorical context. Whiskering forces all monoids in a 2 category to be
+ordered.
 
-\begin{definition}
-  An \emph{ordered monoid} is a monoid $(M,\star,e)$ equipped, for all $a,b,c,
-  d:1\to M$, $\tau: a\Rightarrow b$, and $\lambda: c\Rightarrow d$, with a
-  2-cell $\omega_{\tau,\lambda}$ such that
-  % https://q.uiver.app/#q=WzAsNCxbMCwwLCIxIl0sWzIsMCwiTVxcdGltZXMgTSJdLFswLDIsIk1cXHRpbWVzIE0iXSxbMiwyLCJNIl0sWzAsMSwiYlxcdGltZXMgZCJdLFswLDIsImFcXHRpbWVzIGMiLDJdLFsyLDMsIlxcc3RhciIsMl0sWzEsMywiXFxzdGFyIl0sWzIsMSwiXFxvbWVnYV97XFx0YXUsXFxsYW1iZGF9IiwxLHsibGV2ZWwiOjJ9XV0=
-\[\begin{tikzcd}
-	1 && {M\times M} \\
-	\\
-	{M\times M} && M
-	\arrow["{b\times d}", from=1-1, to=1-3]
-	\arrow["{a\times c}"', from=1-1, to=3-1]
-	\arrow["\star", from=1-3, to=3-3]
-	\arrow["{\omega_{\tau,\lambda}}"{description}, Rightarrow, from=3-1, to=1-3]
-	\arrow["\star"', from=3-1, to=3-3]
-\end{tikzcd}\].
-\end{definition}
+%% \begin{definition}
+%%   An \emph{ordered monoid} is a monoid $(M,\star,e)$ equipped, for all $a,b,c,
+%%   d:1\to M$, $\tau: a\Rightarrow b$, and $\lambda: c\Rightarrow d$, with a
+%%   2-cell $\omega_{\tau,\lambda}$ such that
+%%   % https://q.uiver.app/#q=WzAsNCxbMCwwLCIxIl0sWzIsMCwiTVxcdGltZXMgTSJdLFswLDIsIk1cXHRpbWVzIE0iXSxbMiwyLCJNIl0sWzAsMSwiYlxcdGltZXMgZCJdLFswLDIsImFcXHRpbWVzIGMiLDJdLFsyLDMsIlxcc3RhciIsMl0sWzEsMywiXFxzdGFyIl0sWzIsMSwiXFxvbWVnYV97XFx0YXUsXFxsYW1iZGF9IiwxLHsibGV2ZWwiOjJ9XV0=
+%% \[\begin{tikzcd}
+%% 	1 && {M\times M} \\
+%% 	\\
+%% 	{M\times M} && M
+%% 	\arrow["{b\times d}", from=1-1, to=1-3]
+%% 	\arrow["{a\times c}"', from=1-1, to=3-1]
+%% 	\arrow["\star", from=1-3, to=3-3]
+%% 	\arrow["{\omega_{\tau,\lambda}}"{description}, Rightarrow, from=3-1, to=1-3]
+%% 	\arrow["\star"', from=3-1, to=3-3]
+%% \end{tikzcd}\].
+%% \end{definition}
 
 \begin{definition}
   A \emph{concurrent monoid} consists of:
@@ -83,7 +87,7 @@ to a 2-categorical context.
     \item An object $M$ of $\mathcal{C}$;
     \item A morphism $e:1\to M$;
     \item Two morphisms $;$ and $||:M\times M\to M$ such that $(M,;,e)$ and
-      $(M,||,e)$ are ordered monoids;
+      $(M,||,e)$ are monoids;
     \item A 2-cell $\iota$ such that:
 % https://q.uiver.app/#q=WzAsNSxbMCwwLCJNXFx0aW1lcyBNIFxcdGltZXMgTVxcdGltZXMgTSJdLFsyLDAsIk1cXHRpbWVzIE1cXHRpbWVzIE1cXHRpbWVzIE0iXSxbMCwyLCJNXFx0aW1lcyBNIl0sWzQsMCwiTVxcdGltZXMgTSJdLFs0LDIsIk0iXSxbMCwxLCJcXGxhbmcgTSwgdCwgTSBcXHJhbmciXSxbMCwyLCJcXGxhbmd8fCx8fFxccmFuZyIsMl0sWzEsMywiXFxsYW5nIDssO1xccmFuZyJdLFszLDQsInx8Il0sWzIsNCwiOyIsMl0sWzIsMywiXFxpb3RhIiwxLHsibGV2ZWwiOjJ9XV0=
 \[\begin{tikzcd}
@@ -106,7 +110,7 @@ to a 2-categorical context.
   \begin{itemize}
     \item An object $M$ of $\mathcal{C}$;
     \item Two morphisms $\eta:1\to M$ and $\mu:M\times M\to M$ such that $(M,\mu,\eta)$ is a monoid;
-    \item Two morphisms $\epsilon:M\to 1$ and $\Delta M\to M\times M$ such that
+    \item Two morphisms $\epsilon:M\to 1$ and $\Delta :M\to M\times M$ such that
       $(M,\delta,\epsilon)$ is a comonoid;
   \end{itemize}
   such that the following diagrams commute:
@@ -122,7 +126,41 @@ to a 2-categorical context.
 	\arrow["\Delta", from=1-3, to=5-3]
 	\arrow["{\langle M,t,M\rangle}"', from=3-1, to=5-1]
 	\arrow["{\langle\mu,\mu\rangle}"', from=5-1, to=5-3]
-\end{tikzcd}\],
-  .
+\end{tikzcd}\]
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCIxIl0sWzIsMCwiTSJdLFsyLDIsIk1cXHRpbWVzIE0iXSxbMCwyLCIxXFx0aW1lcyAxIl0sWzAsMSwiXFxldGEiXSxbMSwyLCJcXERlbHRhIl0sWzMsMiwiXFxldGFcXHRpbWVzXFxldGEiLDJdLFswLDMsIlxcc2ltIiwyLHsibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XV0=
+\[\begin{tikzcd}
+	1 && M \\
+	\\
+	{1\times 1} && {M\times M}
+	\arrow["\eta", from=1-1, to=1-3]
+	\arrow["\sim"', equals, from=1-1, to=3-1]
+	\arrow["\Delta", from=1-3, to=3-3]
+	\arrow["{\eta\times\eta}"', from=3-1, to=3-3]
+\end{tikzcd}
+\begin{tikzcd}
+	{M\times M} && M \\
+	\\
+	{1\times1} && 1
+	\arrow["\mu", from=1-1, to=1-3]
+	\arrow["{\langle\epsilon,\epsilon\rangle}"', from=1-1, to=3-1]
+	\arrow["\epsilon", from=1-3, to=3-3]
+	\arrow["\sim"', equals, from=3-1, to=3-3]
+\end{tikzcd}
+% https://q.uiver.app/#q=WzAsMyxbMCwwLCIxIl0sWzIsMiwiMSJdLFsyLDAsIk0iXSxbMiwxLCJcXGVwc2lsb24iXSxbMCwyLCJcXGV0YSJdLFswLDEsIlxcc2ltIiwyLHsibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XV0=
+\begin{tikzcd}
+	1 && M \\
+	\\
+	&& 1
+	\arrow["\eta", from=1-1, to=1-3]
+	\arrow[equals, from=1-1, to=3-3]
+	\arrow["\epsilon", from=1-3, to=3-3]
+\end{tikzcd}\]
 \end{definition}
+Let $Rel$ denote the 2-category of sets, relations and inclusions.
+%% \begin{lemma}
+%%   All monoids in $Rel$ are ordered.
+%% \end{lemma}
+%% \begin{proof}
+%%   Let $(M, \star, e)$ be a monoid in $Rel$.
+%% \end{proof}
 \end{document}
