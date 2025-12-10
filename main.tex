@@ -8,15 +8,19 @@
 %\usepackage[xcharter]{newtx}
 \usepackage{XCharter}
 \usepackage{quiver}
+\usepackage{stackengine}
 
 \usepackage[backend=bibtex, style=alphabetic]{biblatex}
 \addbibresource{main.bib}
 
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{amssymb}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{theorem}{Theorem}[section]
+\theoremstyle{remark}
+\newtheorem*{example}{Example}
 
 \renewcommand{\baselinestretch}{1.06}
 %\usepackage{MnSymbol}
@@ -50,7 +54,7 @@
 \usepackage[backend=bibtex, style=alphabetic]{biblatex}
 %\addbibresource{main.bib}
 \renewcommand*{\bibfont}{\small}
-
+\newcommand{\rightarrowbar}{\mathrel{+\!\!\!\!\!\!\rightarrow}}
 \author{Aghilas Y. Boussaa \texttt{<aghilas.boussaa@ens.fr>}}
 
 \title{Étude monadique de l'ordonnancement probabiliste}
@@ -60,6 +64,47 @@
 \section{Introduction}
 In this section, $\mathcal{C}$ will denote a symmetric tensorial 2-category
 whose tensor unit will be noted $1$.
+
+\begin{definition}
+  A \emph{monad} consists of a functor $T$ equipped with two natural
+  transformations $\eta:\text{id}\Rightarrow T$ (called \emph{unit}) and
+  $\mu:T^2\Rightarrow T$ (called \emph{multiplication}) such that the following
+  diagrams commute.
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCJUIl0sWzEsMCwiVFQiXSxbMiwwLCJUIl0sWzEsMSwiVCJdLFswLDEsIlxcZXRhIFQiXSxbMiwxLCJUXFxldGEiLDJdLFsxLDMsIlxcbXUiLDJdLFszLDIsIiIsMix7ImxldmVsIjoyLCJzdHlsZSI6eyJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsMywiIiwyLHsibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XV0=
+\[\begin{tikzcd}
+	T & TT & T \\
+	& T
+	\arrow["{\eta T}", from=1-1, to=1-2]
+	\arrow[equals, from=1-1, to=2-2]
+	\arrow["\mu"', from=1-2, to=2-2]
+	\arrow["{T\eta}"', from=1-3, to=1-2]
+	\arrow[equals, from=2-2, to=1-3]
+\end{tikzcd}
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCJUVFQiXSxbMSwwLCJUVCJdLFswLDEsIlRUIl0sWzEsMSwiVCJdLFswLDEsIlRcXG11Il0sWzAsMiwiXFxtdSBUIiwyXSxbMiwzLCJcXG11IiwyXSxbMSwzLCJcXG11Il1d
+\begin{tikzcd}
+	TTT & TT \\
+	TT & T
+	\arrow["{T\mu}", from=1-1, to=1-2]
+	\arrow["{\mu T}"', from=1-1, to=2-1]
+	\arrow["\mu", from=1-2, to=2-2]
+	\arrow["\mu"', from=2-1, to=2-2]
+\end{tikzcd}\]
+\end{definition}
+\begin{example}
+  The power set functor $\mathcal{P}$ (mapping each set to each power set and
+  each function to the associated direct image function) is a monad with:
+  \begin{itemize}
+    \item $\eta_X(x)=\{x\}$;
+    \item $\mu_X(A)=\bigcup_{a\in A} a$.
+  \end{itemize}
+  Let $\Sigma$ be a finite set. The writer monad $-\times\Sigma^*$ on the
+  alphabet $\Sigma$ is defined by:
+  \begin{itemize}
+    \item $\left(f\times\Sigma^*\right)((a,w)) = (f(a),w)$ for $f:A\to B$;
+    \item $\eta_X(x)=(x,\epsilon)$;
+    \item $\mu_X((a,w)w')=(a, ww')$.
+  \end{itemize}
+\end{example}
 
 \begin{definition}
   Let $(S,\eta^S, \mu^S)$ and $(T, \eta^T, \mu^T)$ be two monads. Then a
@@ -73,9 +118,9 @@ whose tensor unit will be noted $1$.
 	\arrow["{T\eta^S}"', from=1-2, to=2-1]
 	\arrow["{\eta^ST}", from=1-2, to=2-3]
 	\arrow["l"', from=2-1, to=2-3]
-\end{tikzcd}\]
+\end{tikzcd}
 % https://q.uiver.app/#q=WzAsMyxbMCwxLCJUUyJdLFsyLDEsIlNUIl0sWzEsMCwiUyJdLFswLDEsImwiLDJdLFsyLDAsIlxcZXRhXlRTIiwyXSxbMiwxLCJTXFxldGFeVCJdXQ==
-\[\begin{tikzcd}
+\begin{tikzcd}
 	& S \\
 	TS && ST
 	\arrow["{\eta^TS}"', from=1-2, to=2-1]
@@ -86,7 +131,7 @@ whose tensor unit will be noted $1$.
 \[\begin{tikzcd}
 	TSS && STS && SST \\
 	\\
-	ST &&&& TS
+	TS &&&& ST
 	\arrow["lS", from=1-1, to=1-3]
 	\arrow["{T\mu^S}"', from=1-1, to=3-1]
 	\arrow["Sl", from=1-3, to=1-5]
@@ -98,7 +143,7 @@ whose tensor unit will be noted $1$.
 \[\begin{tikzcd}
 	TTS && TST && STT \\
 	\\
-	ST &&&& TS
+	TS &&&& ST
 	\arrow["Tl", from=1-1, to=1-3]
 	\arrow["{\mu^TS}"', from=1-1, to=3-1]
 	\arrow["lT", from=1-3, to=1-5]
@@ -107,13 +152,148 @@ whose tensor unit will be noted $1$.
 \end{tikzcd}\]
 \end{definition}
 
+On the category $\text{\textbf{Set}}$, let $S$ be the power set monad, and let
+$T$ be the writer monad associated to a set $\Sigma$. Then, the following $l$ is
+a distributive law of $S$ over $T$:
+\[
+l_X((A\subseteq X, w\in\Sigma^\star)) = \left\{(a,w) | a\in A\right\}.
+\]
+
 \begin{theorem}
   Let $(S,\eta^S, \mu^S)$ and $(T, \eta^T, \mu^T)$ be two monads, and let $l$ be
-  distributive law of $S$ over $T$. Then the monad $T$ can be lifted to the
-  Kleisli category of $S$.
+  distributive law of $S$ over $T$. Then the monad $T$ can be lifted to
+  $\mathcal{C}_S$, the Kleisli category of $S$.
 \end{theorem}
 \begin{proof}
+  Define $\tilde{T}$ by:
+  \begin{itemize}
+    \item $\tilde{T}(A:\mathcal{C}_S)=TA$;
+    \item $\tilde{T}(f:A\to SB)=l_B\circ Tf$.
+  \end{itemize}
+
+  Let us show that $\tilde{T}$ is a functor. Let $A$ be an object of
+  $\mathcal{C}$, then $\tilde{T}\eta^S_A=l_{TA}\circ T\eta^S_A=\eta^S_{TA}$ as
+  $l$ is a distributive law: $\tilde{T}$ preserves identities. Let $f:A\to SB$
+  and $g:B\to SC$, then the follwoing diagram commutes: by naturality of $l$ for
+  the left square and by definition of distributive law for the right rectangle.
+  % https://q.uiver.app/#q=WzAsOCxbMCwwLCJUQSJdLFsxLDAsIlRTQiJdLFsyLDAsIlRTU0MiXSxbMSwxLCJTVEIiXSxbMiwxLCJTVFNDIl0sWzMsMSwiU1NUQyJdLFs0LDEsIlNUQyJdLFs0LDAsIlRTQyJdLFswLDEsIlRmIl0sWzEsMiwiVFNnIl0sWzMsNCwiU1RnIl0sWzQsNSwiU2xfQyJdLFs1LDYsIlxcbXVeU197VEN9Il0sWzEsMywibF9CIl0sWzIsNCwibF97U0N9Il0sWzIsNywiVFxcbXVfQ157U30iXSxbNyw2LCJsX0MiXV0=
+\[\begin{tikzcd}
+	TA & TSB & TSSC && TSC \\
+	& STB & STSC & SSTC & STC
+	\arrow["Tf", from=1-1, to=1-2]
+	\arrow["TSg", from=1-2, to=1-3]
+	\arrow["{l_B}", from=1-2, to=2-2]
+	\arrow["{T\mu_C^{S}}", from=1-3, to=1-5]
+	\arrow["{l_{SC}}", from=1-3, to=2-3]
+	\arrow["{l_C}", from=1-5, to=2-5]
+	\arrow["STg", from=2-2, to=2-3]
+	\arrow["{Sl_C}", from=2-3, to=2-4]
+	\arrow["{\mu^S_{TC}}", from=2-4, to=2-5]
+\end{tikzcd}\]
+Thus, $\tilde{T}$ preserves composition.
+
+Let us show that $\eta^{\tilde{T}}=(\eta^S T)\eta^T:\text{id}\Rightarrow
+\tilde{T}$ and $\mu^{\tilde{T}}=(\eta^S T):\mu^T$ endow $\tilde{T}$ with a monad
+structure. The two following diagrams in $\mathcal{C}$ commute for all object
+$X:\mathcal{C}$ because of the monad structure of $S$ and $T$ and the
+distributivity diagrams, and they correspond in $\mathcal{C}_S$ to the diagrams
+defining monads.
+
+%%%%% https://q.uiver.app/#q=WzAsMTEsWzAsMSwiVCJdLFsxLDEsIlRUWCJdLFszLDEsIlNUVCJdLFs0LDAsIlRTVCJdLFs1LDEsIlRUIl0sWzYsMSwiVCJdLFszLDIsIlNUIl0sWzMsMywiU1NUIl0sWzMsNCwiU1QiXSxbMiwyLCJTVCJdLFs0LDIsIlNUIl0sWzAsMSwiXFxldGFeVFQiXSxbMSwyLCJcXGV0YV5TVFQiXSxbMywyLCJsVCIsMl0sWzQsMywiVFxcZXRhXlNUIiwyXSxbNSw0LCJUXFxldGFeVCIsMl0sWzQsMiwiXFxldGFeU1RUIiwyXSxbMiw2LCJTXFxtdV5UIiwxXSxbNiw3LCJTXFxldGFeU1QiXSxbNyw4LCJcXG11XlNUIl0sWzAsOCwiXFxldGFeU1QiLDJdLFs1LDgsIlxcZXRhXlNUIl0sWzYsOCwiIiwwLHsiY3VydmUiOjIsImxldmVsIjoyLCJzdHlsZSI6eyJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsOSwiXFxldGFeU1QiXSxbOSwyLCJTXFxldGFeVFQiXSxbOSw2LCIiLDAseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs2LDEwLCIiLDAseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs1LDEwLCJcXGV0YV5TVCIsMl0sWzEwLDIsIlNUXFxldGFeVCIsMl1d
+
+% https://q.uiver.app/#q=WzAsMTEsWzAsMSwiVFgiXSxbMSwxLCJUVFgiXSxbMywxLCJTVFRYIl0sWzQsMCwiVFNUWCJdLFs1LDEsIlRUWCJdLFs2LDEsIlRYIl0sWzMsMiwiU1RYIl0sWzMsMywiU1NUWCJdLFszLDQsIlNUWCJdLFsyLDIsIlNUWCJdLFs0LDIsIlNUWCJdLFswLDEsIlxcZXRhXlRfe1RYfSJdLFsxLDIsIlxcZXRhX3tUVFh9XlMiXSxbMywyLCJsX3tUWH0iLDJdLFs0LDMsIlRcXGV0YV97VFh9XlMiLDJdLFs1LDQsIlRcXGV0YV5UX1giLDJdLFs0LDIsIlxcZXRhX3tUVFh9XlMiLDJdLFsyLDYsIlNcXG11X1heVCIsMV0sWzYsNywiU1xcZXRhXlNfe1RYfSJdLFs3LDgsIlxcbXVeU197VFh9Il0sWzAsOCwiXFxldGFeU197VFh9IiwyXSxbNSw4LCJcXGV0YV97VFh9XlMiXSxbNiw4LCIiLDAseyJjdXJ2ZSI6MiwibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMCw5LCJcXGV0YV5TX3tUWH0iXSxbOSwyLCJTXFxldGFeVF97VFh9Il0sWzksNiwiIiwwLHsibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbNiwxMCwiIiwwLHsibGV2ZWwiOjIsInN0eWxlIjp7ImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbNSwxMCwiXFxldGFeU197VFh9IiwyXSxbMTAsMiwiU1RcXGV0YV5UX1giLDJdXQ==
+\[\begin{tikzcd}
+	&&&& TSTX \\
+	TX & TTX && STTX && TTX & TX \\
+	&& STX & STX & STX \\
+	&&& SSTX \\
+	&&& STX
+	\arrow["{l_{TX}}"', from=1-5, to=2-4]
+	\arrow["{\eta^T_{TX}}", from=2-1, to=2-2]
+	\arrow["{\eta^S_{TX}}", from=2-1, to=3-3]
+	\arrow["{\eta^S_{TX}}"', from=2-1, to=5-4]
+	\arrow["{\eta_{TTX}^S}", from=2-2, to=2-4]
+	\arrow["{S\mu_X^T}"{description}, from=2-4, to=3-4]
+	\arrow["{T\eta_{TX}^S}"', from=2-6, to=1-5]
+	\arrow["{\eta_{TTX}^S}"', from=2-6, to=2-4]
+	\arrow["{T\eta^T_X}"', from=2-7, to=2-6]
+	\arrow["{\eta^S_{TX}}"', from=2-7, to=3-5]
+	\arrow["{\eta_{TX}^S}", from=2-7, to=5-4]
+	\arrow["{S\eta^T_{TX}}", from=3-3, to=2-4]
+	\arrow[equals, from=3-3, to=3-4]
+	\arrow[equals, from=3-4, to=3-5]
+	\arrow["{S\eta^S_{TX}}", from=3-4, to=4-4]
+	\arrow[curve={height=24pt}, equals, from=3-4, to=5-4]
+	\arrow["{ST\eta^T_X}"', from=3-5, to=2-4]
+	\arrow["{\mu^S_{TX}}", from=4-4, to=5-4]
+\end{tikzcd}\]
+
+%%%%% https://q.uiver.app/#q=WzAsMTMsWzAsMSwiVFRUIl0sWzEsMSwiVFQiXSxbMiwwLCJUU1QiXSxbMywxLCJTVFQiXSxbMyw0LCJTVCJdLFswLDIsIlRUIl0sWzAsNCwiU1RUIl0sWzEsNCwiU1QiXSxbMiw0LCJTU1QiXSxbMywyLCJTVCJdLFszLDMsIlNTVCJdLFsyLDMsIlNUIl0sWzEsMiwiVCJdLFswLDEsIlRcXG11XlQiXSxbMSwyLCJUXFxldGFeU1QiXSxbMCw1LCJcXG11XlRfe1RYfSIsMl0sWzUsNiwiXFxldGFeU1RUIiwyXSxbNiw3LCJTXFxtdV5UIiwyXSxbNyw4LCJTXFxldGFeU1QiXSxbOCw0LCJcXG11XlNUIl0sWzIsMywibFQiXSxbMSwzLCJcXGV0YV5TVFQiLDFdLFszLDksIlNcXG11XlQiXSxbOSwxMCwiU1xcZXRhXlNUIiwxXSxbMTAsNCwiXFxtdV5TVCIsMl0sWzksNCwiIiwyLHsiY3VydmUiOi0zLCJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs3LDQsIiIsMix7ImN1cnZlIjozLCJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs3LDExLCIiLDEseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFsxMSw5LCIiLDEseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFsxMiwxMSwiXFxldGFeU1QiXSxbMywxMSwiU1xcbXVeVCIsMV0sWzEsMTIsIlxcbXVeVCJdLFs1LDEyLCJcXG11XlQiLDJdLFs2LDExLCJTXFxtdV5UIiwxXV0=
+
+% https://q.uiver.app/#q=WzAsMTMsWzAsMSwiVFRUWCJdLFsxLDEsIlRUWCJdLFsyLDAsIlRTVFgiXSxbMywxLCJTVFRYIl0sWzMsNCwiU1RYIl0sWzAsMiwiVFRYIl0sWzAsNCwiU1RUWCJdLFsxLDQsIlNUWCJdLFsyLDQsIlNTVFgiXSxbMywyLCJTVFgiXSxbMywzLCJTU1RYIl0sWzIsMywiU1RYIl0sWzEsMiwiVFgiXSxbMCwxLCJUXFxtdV5UX1giXSxbMSwyLCJUXFxldGFeU197VFh9Il0sWzAsNSwiXFxtdV5UX3tUWH0iLDJdLFs1LDYsIlxcZXRhX3tUVFh9XlMiLDJdLFs2LDcsIlNcXG11XlRfWCIsMl0sWzcsOCwiU1xcZXRhXlNfe1RYfSJdLFs4LDQsIlxcbXVeU197VFh9Il0sWzIsMywibF97VFh9Il0sWzEsMywiXFxldGFfe1RUWH1eUyIsMV0sWzMsOSwiU1xcbXVfWF5UIl0sWzksMTAsIlNcXGV0YV97VFh9XlMiLDJdLFsxMCw0LCJcXG11XlNfe1RYfSIsMl0sWzksNCwiIiwyLHsiY3VydmUiOi0zLCJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs3LDQsIiIsMix7ImN1cnZlIjozLCJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs3LDExLCIiLDEseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFsxMSw5LCIiLDEseyJsZXZlbCI6Miwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFsxMiwxMSwiXFxldGFfe1RYfV5TIl0sWzMsMTEsIlNcXG11XlRfWCIsMV0sWzEsMTIsIlxcbXVeVF9YIl0sWzUsMTIsIlxcbXVfWF5UIiwyXSxbNiwxMSwiU1xcbXVeVF9YIiwxXV0=
+\[\begin{tikzcd}
+	&& TSTX \\
+	TTTX & TTX && STTX \\
+	TTX & TX && STX \\
+	&& STX & SSTX \\
+	STTX & STX & SSTX & STX
+	\arrow["{l_{TX}}", from=1-3, to=2-4]
+	\arrow["{T\mu^T_X}", from=2-1, to=2-2]
+	\arrow["{\mu^T_{TX}}"', from=2-1, to=3-1]
+	\arrow["{T\eta^S_{TX}}", from=2-2, to=1-3]
+	\arrow["{\eta_{TTX}^S}"{description}, from=2-2, to=2-4]
+	\arrow["{\mu^T_X}", from=2-2, to=3-2]
+	\arrow["{S\mu_X^T}", from=2-4, to=3-4]
+	\arrow["{S\mu^T_X}"{description}, from=2-4, to=4-3]
+	\arrow["{\mu_X^T}"', from=3-1, to=3-2]
+	\arrow["{\eta_{TTX}^S}"', from=3-1, to=5-1]
+	\arrow["{\eta_{TX}^S}", from=3-2, to=4-3]
+	\arrow["{S\eta_{TX}^S}"', from=3-4, to=4-4]
+	\arrow[curve={height=-18pt}, equals, from=3-4, to=5-4]
+	\arrow[equals, from=4-3, to=3-4]
+	\arrow["{\mu^S_{TX}}"', from=4-4, to=5-4]
+	\arrow["{S\mu^T_X}"{description}, from=5-1, to=4-3]
+	\arrow["{S\mu^T_X}"', from=5-1, to=5-2]
+	\arrow[equals, from=5-2, to=4-3]
+	\arrow["{S\eta^S_{TX}}", from=5-2, to=5-3]
+	\arrow[curve={height=18pt}, equals, from=5-2, to=5-4]
+	\arrow["{\mu^S_{TX}}", from=5-3, to=5-4]
+\end{tikzcd}\]
 \end{proof}
+
+This theorem allows us to lift the writer monad to the Kleisli category of the
+power set monad: $\textbf{Rel}$.
+
+\begin{definition}
+  $\dashrightarrow$
+  A \emph{monoid} in a category $\mathcal{C}$ consists of:
+  \begin{itemize}
+    \item An object $M$ of $\mathcal{C}$;
+    \item A morphism $e:1\to M$;
+    \item A morphism $\star:M\otimes M\to M$;
+  \end{itemize}
+  such that the following diagrams commute:
+% https://q.uiver.app/#q=WzAsNSxbMCwwLCIoTVxcb3RpbWVzIE0pXFxvdGltZXMgTSJdLFsyLDAsIk1cXG90aW1lcyAoTVxcb3RpbWVzIE0pIl0sWzQsMCwiTVxcb3RpbWVzIE0iXSxbMSwxLCJNXFxvdGltZXMgTSJdLFszLDEsIk0iXSxbMCwxLCJcXGFscGhhIl0sWzEsMiwiTVxcb3RpbWVzXFxtdSJdLFswLDMsIlxcbXVcXG90aW1lcyBNIiwyXSxbMiw0LCJcXG11Il0sWzMsNCwiXFxtdSIsMl1d
+\[\begin{tikzcd}[sep=tiny]
+	{(M\otimes M)\otimes M} && {M\otimes (M\otimes M)} && {M\otimes M} \\
+	& {M\otimes M} && M
+	\arrow["\alpha", from=1-1, to=1-3]
+	\arrow["{\mu\otimes M}"', from=1-1, to=2-2]
+	\arrow["{M\otimes\mu}", from=1-3, to=1-5]
+	\arrow["\mu", from=1-5, to=2-4]
+	\arrow["\mu"', from=2-2, to=2-4]
+\end{tikzcd}\]
+% https://q.uiver.app/#q=WzAsNCxbMCwwLCIxXFxvdGltZXMgTSJdLFsxLDAsIk1cXG90aW1lcyBNIl0sWzIsMCwiTVxcb3RpbWVzIDEiXSxbMSwxLCJNIl0sWzAsMSwiZVxcb3RpbWVzIE0iXSxbMiwxLCJNXFxvdGltZXMgZSIsMl0sWzAsMywiXFxsYW1iZGEiLDJdLFsxLDMsIlxcc3RhciIsMl0sWzIsMywiXFxyaG8iXV0=
+\[\begin{tikzcd}
+	{1\otimes M} & {M\otimes M} & {M\otimes 1} \\
+	& M
+	\arrow["{e\otimes M}", from=1-1, to=1-2]
+	\arrow["\lambda"', from=1-1, to=2-2]
+	\arrow["\star"', from=1-2, to=2-2]
+	\arrow["{M\otimes e}"', from=1-3, to=1-2]
+	\arrow["\rho", from=1-3, to=2-2]
+\end{tikzcd}\]
+\end{definition}
 
 We adapt the definitions of \emph{concurrent monoid} from~\cite{rivas2019monads}
 to a 2-categorical context. Whiskering forces all monoids in a 2 category to be
@@ -156,7 +336,6 @@ ordered.
 	\arrow["\iota"{description}, Rightarrow, from=3-1, to=1-5]
 	\arrow["{;}"', from=3-1, to=3-5]
 \end{tikzcd}\]
-
   \end{itemize}.
 \end{definition}
 
@@ -212,6 +391,23 @@ ordered.
 \end{tikzcd}\]
 \end{definition}
 
+\begin{example}[The \emph{shuffle bialgebra}~\cite{benson1987shuffle}]
+  Let $\Sigma$ be a finite set, then the following relations define a bialgebra
+  on $\Sigma^*$ in $\textbf{Rel}$. For all $v,w$ and $z\in\Sigma^*$, we have:
+  \begin{itemize}
+    \item $1\eta w$ if and only if $w$ is empty;
+    \item $w\epsilon 1$ if and only if $w$ is empty;
+    \item $(v,w)\mu z$ if and only if $z$ can be obtained by shuffling (while
+      preserving relative order) the letters of $v$ and $w$;
+    \item $v\Delta (w,z)$ if and only if $v=wz$.
+  \end{itemize}
+\end{example}
+
+\begin{definition}
+  A \emph{dagger category} (or $\dagger$-category) is a category equipped with
+  an involutive contravariant functor which acts like the identity on objects.
+\end{definition}
+
 \begin{definition}
   A \emph{dagger symmetric monoidal category}~\cite{selinger2007dagger} is a
   category that is both dagger category and a symmetric monoidal category such
@@ -223,7 +419,7 @@ ordered.
     \item $\sigma_{A,B}^\dagger=\sigma_{A,B}^{-1}$.
   \end{itemize}
 \end{definition}
-Let $\text{\textbf{Rel}}$ denote the 2-category of sets, relations and
+Let $\textbf{Rel}$ denote the 2-category of sets, relations and
 inclusions with its usual dagger symmetric monoidal structure.
 
 For the sake of readability, we will use juxtaposition for the tensor product.
@@ -236,15 +432,15 @@ For the sake of readability, we will use juxtaposition for the tensor product.
   comonoid gives diagrams proving that $(M, \star^\dagger, e^\dagger)$ is a monoid.
 \end{proof}
 
-\begin{lemma}\label{epsdageta}
-  Let $(M, \mu, \Delta, \eta, \epsilon)$ be a bialgebra in
-  $\text{\textbf{Rel}}$. Then $\epsilon^\dagger=\eta$.
-\end{lemma}
-\begin{proof}
-  Applying the dagger functor to the last diagram of the bialgebra definition,
-  we have: $\eta^\dagger\circ\epsilon^\dagger = 1$, then
-  $\eta=\eta\circ\eta^\dagger\circ\epsilon^\dagger$.
-\end{proof}
+%% \begin{lemma}\label{epsdageta}
+%%   Let $(M, \mu, \Delta, \eta, \epsilon)$ be a bialgebra in
+%%   $\text{\textbf{Rel}}$. Then $\epsilon^\dagger=\eta$.
+%% \end{lemma}
+%% \begin{proof}
+%%   Applying the dagger functor to the last diagram of the bialgebra definition,
+%%   we have: $\eta^\dagger\circ\epsilon^\dagger = 1$, then
+%%   $\eta=\eta\circ\eta^\dagger\circ\epsilon^\dagger$.
+%% \end{proof}
 
 \begin{theorem}
   Let $(M, \mu, \Delta, \eta, \epsilon)$ be a bialgebra in a dagger symmetric
@@ -271,15 +467,16 @@ For the sake of readability, we will use juxtaposition for the tensor product.
 	\arrow[between={0}{0.8}, Rightarrow, from=1-3, to=0]
 \end{tikzcd}\]
 \end{theorem}
-In $\text{\textbf{Rel}}$, the equation is always satisfied by
-Lemma~\ref{epsdageta}, the first diagram states that $\Delta^\dagger$ is entire
+In $\textbf{Rel}$, the first diagram states that $\Delta^\dagger$ is entire
 (each element of $M\otimes M$ is in relation with at lest one element of $M$),
 and the second one states that $\Delta^\dagger$ is \emph{functional} (each
 element of $M\otimes M$ is in relation with at most one element of $M$). Thus,
-in $\text{\textbf{Rel}}$, it suffices that $\Delta^\dagger:M\otimes M\to M$ be a
+in $\textbf{Rel}$, it suffices that $\Delta^\dagger:M\otimes M\to M$ be a
 function.
+
+All these hypotheses are satisfied by the shuffle bialgebra.
 \begin{proof}
-  By Lemma~\ref{comonmon} and the equation in the hypothesis,
+  By Lemma~\ref{comonmon} and the equation in the hypotheses,
   $(M,\Delta^\dagger, \eta)$ is a monoid. Then, by definition of bialgebra
   $(M,\mu,\eta)$ is a monoid. The only thing left to get a concurrent monoid is
   the 2-cell $\iota$.
@@ -335,15 +532,90 @@ hypothesis, the following diagram commutes.
 	\arrow["{\Delta^\dagger}"', from=7-1, to=7-7]
 \end{tikzcd}\]
 
-This diagram gives, by composition, a 2-cell making $(M, \mu, \Delta^\dagger,
+This diagram gives, by vertical composition, a 2-cell making $(M, \mu, \Delta^\dagger,
 \eta)$ a concurrent monoid.
 \end{proof}
 
-%% \begin{lemma}
-%%   All monoids in $Rel$ are ordered.
-%% \end{lemma}
-%% \begin{proof}
-%%   Let $(M, \star, e)$ be a monoid in $Rel$.
-%% \end{proof}
+\begin{theorem}
+  TO FIX
+
+  Let $\mathcal{C}$ be a category, and let $(T,\eta,\mu)$ be a monad on
+  $\mathcal{C}$. Then, a $\dagger$-category structure on $\mathcal{C}_T$ is
+  equivalent to the data of a contravariant functor $T^\dagger$ on $\mathcal{C}$
+  and that acts like $T$ on objects that is its own right-adjoint --- i.e.
+  $\text{Hom}_{\mathcal{C}}(A,T^\dagger
+  B)\equiv\text{Hom}_{\mathcal{C}}(B,T^\dagger A)$.
+\end{theorem}
+\begin{proof}
+  Suppose that $\mathcal{C}_T$ is equipped with a dagger. Define $T^\dagger$ by:
+  \[T^\dagger (f:A\to B):=\mu_{TA} \circ T({(\eta_B\circ f)}^\dagger):TB\to TA.\]
+  Let us show that $T^\dagger$ is a functor:
+  \begin{itemize}
+    \item Let $A:\mathcal{C}$. Then $T^\dagger(\text{Id}_A)=\mu_{TA} \circ
+      T({(\eta_A)}^\dagger)$, but $\eta_A$ is the identity on $A$ in
+      $\mathcal{C}_T$, thus $T^\dagger(\text{Id}_A)=\mu_{TA} \circ
+      T\eta_A=\text{Id}_A$ because $T$ is a monad.
+
+    \item Let $f:A\to B$ and $g:B\to C$.
+  \end{itemize}
+
+  Conversely, let $T^\dagger$ be a contravariant on $\mathcal{C}$ that acts like
+  $T$ on objects, and such that $\text{Hom}_{\mathcal{C}}(A,T^\dagger
+  B)\equiv\text{Hom}_{\mathcal{C}}(B,T^\dagger A)$. For any object
+  $A:\mathcal{C}$, let $\eta^\ddagger_A:A\to T^2$ be the map obtained by
+  applying the previous isomorphism to $\text{Id}_{TA}:TA\to TA$. Define
+  $-^\dagger$ by:
+  \[{(f:A\to TB)}^\dagger:=T^\dagger f\circ \eta^\ddagger_B.\]
+\end{proof}
+
+\section{Profunctors}
+We focused earlier on relations. We now study
+profunctors~\cite{benabou2000distributors}, a categorical generalisation of
+relations.
+\begin{definition}
+  Let $\mathcal{C}$ be a category. A functor from $\mathcal{C}^{\text{op}}$ to
+  $\textbf{Set}$ if called a \emph{presheaf} of $\mathcal{C}$. Presheaves over a
+  category form a category $\hat{\mathcal{C}}$ where morphisms are natural
+  transformations.
+\end{definition}
+\begin{definition}
+  Let $\mathcal{C}$ and $\mathcal{D}$ be two categories. A \emph{profunctor} ---
+  also called \emph{distributor} --- $F$ from $\mathcal{C}$ to $\mathcal{D}$,
+  noted $\mathcal{F:\mathcal{C}\rightarrowbar\mathcal{D}}$ is a functor
+  $\mathcal{D}^{\text{op}}\times\mathcal{C}\to \textbf{Set}$.
+\end{definition}
+
+We cannot express composition of profunctors in terms of Kleisli category for
+size reasons: the category of presheaves over a small category is not small
+anymore. We thus present necessary concepts to compose profunctors.
+
+\begin{definition}
+Let $F:\mathcal{C}\to\mathcal{D}$ and $K:\mathcal{C}\to\mathcal{E}$ be two
+functors. A \emph{left Kan extension of $F$ along $K$} consists of a functor
+$\text{Lan}_KF:\mathcal{D}\to\mathcal{E}$ equipped with a natural transformation
+$\eta:F\Rightarrow\text{Lan}_KF K$ such that every natural transformation
+$\theta:F\Rightarrow G K$ with $G:\mathcal{D}\to\mathcal{E}$ factors uniquely
+through $\eta$, meaning that there exists a unique natural transformation
+$\text{Lan}_KF\Rightarrow G$ satisfying the following equality.
+\[
+% https://q.uiver.app/#q=WzAsNyxbMCwwLCJcXG1hdGhjYWx7Q30iXSxbNCwwLCJcXG1hdGhjYWx7RX0iXSxbMiwyLCJcXG1hdGhjYWx7RH0iXSxbNiwwLCJcXG1hdGhjYWx7Q30iXSxbMTAsMCwiXFxtYXRoY2Fse0V9Il0sWzgsMiwiXFxtYXRoY2Fse0R9Il0sWzUsMCwiPSJdLFswLDEsIkYiXSxbMCwyLCJLIiwyXSxbMiwxLCJHIiwyXSxbMyw0LCJGIl0sWzMsNSwiSyIsMl0sWzUsNCwiRyIsMSx7ImN1cnZlIjoyfV0sWzUsNCwiXFx0ZXh0e0xhbn1fS0YiLDEseyJjdXJ2ZSI6LTJ9XSxbNywyLCJcXHRoZXRhIiwwLHsic2hvcnRlbiI6eyJzb3VyY2UiOjEwfX1dLFsxMCw1LCJcXGV0YSIsMix7InNob3J0ZW4iOnsic291cmNlIjoxMH19XSxbMTMsMTIsIlxcZXhpc3RzISIsMix7InNob3J0ZW4iOnsic291cmNlIjozMCwidGFyZ2V0IjozMH19XV0=
+\begin{tikzcd}
+	{\mathcal{C}} &&&& {\mathcal{E}} & {=} & {\mathcal{C}} &&&& {\mathcal{E}} \\
+	\\
+	&& {\mathcal{D}} &&&&&& {\mathcal{D}}
+	\arrow[""{name=0, anchor=center, inner sep=0}, "F", from=1-1, to=1-5]
+	\arrow["K"', from=1-1, to=3-3]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "F", from=1-7, to=1-11]
+	\arrow["K"', from=1-7, to=3-9]
+	\arrow["G"', from=3-3, to=1-5]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "G"{description}, curve={height=12pt}, from=3-9, to=1-11]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "{\text{Lan}_KF}"{description}, curve={height=-12pt}, from=3-9, to=1-11]
+	\arrow["\theta", between={0.1}{1}, Rightarrow, from=0, to=3-3]
+	\arrow["\eta"', between={0.1}{1}, Rightarrow, from=1, to=3-9]
+	\arrow["{\exists!}"', between={0.3}{0.7}, Rightarrow, from=3, to=2]
+\end{tikzcd}
+\]
+\end{definition}
+
 \printbibliography
 \end{document}
